@@ -6,10 +6,8 @@ import io
 st.set_page_config(page_title="עיבוד משרות מורים", layout="wide")
 st.title("📄 עיבוד אוטומטי של קובץ משרות")
 
-# Upload file
 uploaded_file = st.file_uploader("העלה קובץ Excel של משרות:", type=["xlsx"])
 
-# Helper to find relevant columns
 def find_column(cols, keywords):
     for kw in keywords:
         for col in cols:
@@ -87,11 +85,13 @@ if uploaded_file:
         st.success(f"✔️ נמצאו {len(final_df)} שורות תקינות")
         st.dataframe(final_df, use_container_width=True)
 
-        # Download
-        to_download = final_df.to_excel(index=False, engine='openpyxl')
+        buffer = io.BytesIO()
+        final_df.to_excel(buffer, index=False, engine='openpyxl')
+        buffer.seek(0)
+
         st.download_button(
             label="🔹 הורד את הקובץ המעובד",
-            data=to_download,
+            data=buffer,
             file_name="teacher_jobs_cleaned.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
